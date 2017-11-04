@@ -10,16 +10,16 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
-    var BLOCK_WIDTH = 20;
-    var BLOCK_HEIGHT = 20;
-    var PLAYER_SIZE = Math.min(BLOCK_HEIGHT, BLOCK_WIDTH);
-    var EMPTY_SPACE = 0;
+    var BLOCK_WIDTH = 20; // in pixels
+    var BLOCK_HEIGHT = 20; // in pixels
+    var PLAYER_SIZE = Math.min(BLOCK_HEIGHT, BLOCK_WIDTH); // in pixels
+    var EMPTY_SPACE = 0; // no wall
     var WALL = 1;
 
-    var playerX = 1;
-    var playerY = 0;
+    var playerX = 1;  // pos at mazeArr
+    var playerY = 0;  // pos at mazeArr
 
-    var SPACE = 4;
+    var SPACE = 4;   // space in pixels between blocks
 
     var upPressed = 0;
     var downPressed = 0;
