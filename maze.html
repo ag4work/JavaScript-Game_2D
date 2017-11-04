@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop - lesson 1: create the Canvas and draw on it</title>
+    <style>* { padding: 0; margin: 0; } canvas { background: #eee; display: block; margin: 0 auto; }</style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+    var BLOCK_WIDTH = 20;
+    var BLOCK_HEIGHT = 20;
+    var PLAYER_SIZE = Math.min(BLOCK_HEIGHT, BLOCK_WIDTH);
+    var EMPTY_SPACE = 0;
+    var WALL = 1;
+
+    var playerX = 1;
+    var playerY = 0;
+
+    var SPACE = 4;
+
+    var upPressed = 0;
+    var downPressed = 0;
+    var leftPressed = 0;
+    var rightPressed = 0;
+
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+    var mazeStr =
+                    "1 0 0 1 1 1 1 1 1 " +
+                    "1 0 0 1 0 0 0 0 1 " +
+                    "1 0 0 1 1 0 1 0 1 " +
+                    "1 0 0 0 0 0 1 0 1 " +
+                    "1 1 1 1 1 1 1 0 1"
+
+
+    var mazeLinear = mazeStr.split(" ").map(function(name) {
+        return parseInt(name);
+    });
+    var MAZE_WIDTH = 9;
+    var MAZE_HEIGHT = mazeLinear.length / MAZE_WIDTH;
+
+    console.log(MAZE_HEIGHT);
+
+    var mazeArr = [];
+    while(mazeLinear.length) {
+        mazeArr.push(mazeLinear.splice(0, MAZE_WIDTH));
+    }
+
+
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    drawAll();
+
+
+    function drawAll() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawMazeWalls();
+        drawPlayer();
+    }
+
+    function drawMazeWalls() {
+        for (var i = 0; i < MAZE_HEIGHT; i++) {
+            for (var j = 0; j < MAZE_WIDTH; j++) {
+                if (mazeArr[i][j] == WALL) {
+                    myrect(ctx, j * (BLOCK_WIDTH + SPACE), i * (BLOCK_HEIGHT + SPACE),
+                            BLOCK_WIDTH, BLOCK_HEIGHT);
+                }
+            }
+        }
+    }
+
+    function drawPlayer() {
+        ctx.beginPath();
+        ctx.arc(playerX * (BLOCK_WIDTH + SPACE) + BLOCK_WIDTH / 2, playerY * (BLOCK_HEIGHT + SPACE) + BLOCK_HEIGHT /2,
+                PLAYER_SIZE / 2, 0, Math.PI * 2, false);
+        ctx.fillStyle = "green";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+
+    function myrect(ctx, x, y, width, height) {
+        ctx.beginPath();
+        ctx.fillStyle = "blue";
+        ctx.rect(x, y, width, height);
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function moveUp() {
+        if (playerY > 0 && mazeArr[playerY - 1][playerX] == EMPTY_SPACE ) {
+            playerY--;
+        }
+    }
+
+    function moveDown() {
+        if (playerY < MAZE_HEIGHT - 1  && mazeArr[playerY + 1][playerX] == EMPTY_SPACE) {
+            playerY++;
+        }
+    }
+
+    function moveLeft() {
+        if (playerX > 0 && mazeArr[playerY][playerX - 1] == EMPTY_SPACE ) {
+            playerX--;
+        }
+    }
+
+    function moveRight() {
+        if (playerX < MAZE_WIDTH - 1 && mazeArr[playerY][playerX + 1] == EMPTY_SPACE ) {
+            playerX++;
+        }
+    }
+
+    function keyDownHandler(e) {
+        if (e.keyCode == '38' && !upPressed) {
+            moveUp();
+            drawAll();
+            upPressed = 1;
+        }
+        else if (e.keyCode == '40' && !downPressed) {
+            moveDown();
+            drawAll();
+            downPressed = 1;
+        }
+        else if (e.keyCode == '37' && !leftPressed) {
+            moveLeft();
+            drawAll();
+            leftPressed = 1;
+        }
+        else if (e.keyCode == '39' && !rightPressed) {
+            moveRight();
+            drawAll();
+            rightPressed = 1;
+        }
+    }
+
+    function keyUpHandler(e) {
+        if (e.keyCode == '38' && upPressed) {
+            upPressed = 0;
+        }
+        else if (e.keyCode == '40') {
+            downPressed = 0;
+        }
+        else if (e.keyCode == '37') {
+            leftPressed = 0;
+        }
+        else if (e.keyCode == '39') {
+            rightPressed = 0;
+        }
+    }
+
+//    ctx.beginPath();
+//    ctx.rect(20, 40, 50, 50);
+//    ctx.fillStyle = "#FF0000";
+//    ctx.fill();
+//    ctx.closePath();
+//    ctx.beginPath();
+//    ctx.arc(240, 160, 20, 0, Math.PI*2, false);
+//    ctx.fillStyle = "green";
+//    ctx.fill();
+//    ctx.closePath();
+//    ctx.beginPath();
+//    ctx.rect(160, 10, 100, 40);
+//    ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+//    ctx.stroke();
+//    ctx.closePath();
+</script>
+
+</body>
+</html>
