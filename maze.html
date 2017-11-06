@@ -33,8 +33,9 @@
                     "1 0 0 1 1 1 1 1 1 " +
                     "1 0 0 1 0 0 0 0 1 " +
                     "1 0 0 1 1 0 1 0 1 " +
-                    "1 0 0 0 0 0 1 0 1 " +
-                    "1 1 1 1 1 1 1 0 1"
+                    "1 0 0 0 0 0 0 0 1 " +
+                    "1 1 0 1 0 1 1 0 1 " +
+                    "1 1 1 1 1 1 1 0 1";
 
 
     var mazeLinear = mazeStr.split(" ").map(function(name) {
@@ -56,6 +57,72 @@
 
     drawAll();
 
+    var dfs = new DFS(mazeArr, MAZE_WIDTH, 1, 0);
+    var pathArr = dfs.getPath(7, 5);
+    printPath(pathArr);
+
+    function printPath(pathArr) {
+        for (var i = 0; i < pathArr.length;  i++) {
+            console.log("[" + pathArr[i] % MAZE_WIDTH + ", " + Math.floor(pathArr[i] / MAZE_WIDTH) + "]");
+        }
+    }
+
+
+    function DFS(m, mazeWidth, xs, ys) {
+        var T = this;
+        var visited = [];
+        var edgeTo = [];
+        dfsInternal(xs, ys);
+        this.visited = visited;
+        this.edgeTo = edgeTo;
+        function dfsInternal(x,y) {
+            console.log("mark [" + x + "," + y + "] as visited.")
+            visited[x + y * mazeWidth] = 1;
+
+            if (x > 0 && m[y][x - 1] == EMPTY_SPACE && !visited[x - 1 + y * mazeWidth]) {
+                console.log("From [" + x + "," + y + " go left");
+                edgeTo[x + y * mazeWidth - 1] = x + y * mazeWidth;
+                dfsInternal(x - 1, y);
+            }
+            if (x < MAZE_WIDTH - 1 && m[y][x + 1] == EMPTY_SPACE && !visited[x + 1 + y * mazeWidth]) {
+                console.log("From [" + x + "," + y + " go right");
+                edgeTo[x + y * mazeWidth + 1] = x + y * mazeWidth;
+                dfsInternal(x + 1, y);
+            }
+            if (y > 0 && m[y - 1][x] == EMPTY_SPACE && !visited[x + (y - 1) * mazeWidth]) {
+                console.log("From [" + x + "," + y + " go up");
+                edgeTo[x + (y - 1) * mazeWidth] = x + y * mazeWidth;
+                dfsInternal(x, y - 1);
+            }
+            if (y < MAZE_HEIGHT - 1 && m[y + 1][x] == EMPTY_SPACE && !visited[x + (y + 1) * mazeWidth]) {
+                console.log("From [" + x + "," + y + " go down");
+                edgeTo[x + (y + 1) * mazeWidth] = x + y * mazeWidth;
+                dfsInternal(x, y + 1);
+            }
+        }
+        this.hasPathTo = function (x, y) {
+            return edgeTo[x + y * mazeWidth] !== undefined;
+        }
+
+
+        this.getPath = function(x,y) {
+            if (!T.hasPathTo(x,y)) {
+                console.log("no path");
+                return [];
+            }
+            var path = [x + y * mazeWidth];
+            var startPoint = xs + ys * mazeWidth;
+            var toPoint = T.edgeTo[x + y * mazeWidth];
+
+
+            while(startPoint != toPoint) {
+                path.push(toPoint);
+                fromPoint = T.edgeTo[toPoint];
+                toPoint = fromPoint;
+            }
+            return path;
+        }
+    }
 
     function drawAll() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
